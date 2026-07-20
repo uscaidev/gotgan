@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "gotgan": {
+      "command": "node",
+      "args": [
+        "C:\\path\\to\\gotgan-mcp\\scripts\\run-stdio.mjs"
+      ]
+    }
+  }
+}

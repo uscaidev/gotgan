@@ -1,0 +1,29 @@
+{
+  "name": "gotgan-mcp",
+  "version": "0.1.1",
+  "description": "Purpose-oriented Korea public-data discovery and linkage-assessment tools for MCP clients",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "gotgan": "scripts/gotgan.mjs",
+    "gotgan-mcp": "scripts/run-stdio.mjs"
+  },
+  "scripts": {
+    "setup": "node scripts/gotgan.mjs setup",
+    "guide": "node scripts/gotgan.mjs guide",
+    "build-index": "node scripts/build-index.mjs",
+    "start": "node scripts/run-stdio.mjs",
+    "smoke": "node scripts/smoke.mjs",
+    "doctor": "node scripts/gotgan.mjs doctor",
+    "monitor-source": "node scripts/gotgan.mjs monitor-source",
+    "learn": "node scripts/gotgan.mjs learn",
+    "evolve": "node scripts/gotgan.mjs evolve",
+    "check": "node --check src/server.mjs && node --check src/source-monitor.mjs && node scripts/gotgan.mjs doctor --json"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  }
+}
