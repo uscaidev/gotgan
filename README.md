@@ -1,40 +1,36 @@
 # 곳간 공공데이터 MCP
 
-곳간은 공공데이터포털(data.go.kr)의 개방목록을 찾고, 그 데이터가 실제 분석이나 시스템 연계에 쓸 수 있는지 판단하게 해주는 읽기 중심 MCP 서버다. 단순 검색기나 원천 API 대리 호출기가 아니다.
+곳간은 공공데이터포털(data.go.kr)의 개방목록을 검색하고, 해당 데이터가 실제 분석·시스템 연계에 쓸 수 있는지 판단하도록 돕는 읽기 중심 MCP 서버다. 단순 검색 챗봇이나 원천 API 대리 호출기가 아니다.
 
 ## 설계 방향
 
-곳간의 제품 방향은 "공공데이터 검색 챗봇"이 아니라 "목적형 공공데이터 활용 판단 엔진"이다. 사용자는 농업 보조금 검증, 용역 제안서 검토, 내부 시스템 연계, 제공기관 자기점검 같은 목적을 던지고, 곳간은 데이터 후보, 제공형태, 갱신주기, 활용신청, 심의 유형, 트래픽, 망환경 제약을 근거로 다음 행동을 정리한다.
+곳간의 제품 방향은 "공공데이터 검색"이 아니라 **목적형 공공데이터 활용 판단 엔진**이다. 사용자는 농업 보조금 검증, 용역 제안서 검토, 내부 시스템 연계, 제공기관 자기점검 같은 목적을 제시하고, 곳간은 데이터 후보, 제공형태, 갱신주기, 활용신청, 심의 유형, 트래픽, 망환경 제약을 근거로 다음 행동을 정리한다.
 
-첫 MVP는 많은 포털을 얕게 뒤지지 않는다. 공공데이터포털의 **목록개방현황 월간 CSV**를 로컬 인덱스로 만들고, 필요한 경우 data.go.kr 상세페이지를 라이브 조회해 API 사용방법과 활용신청 정보를 확인한다. 인증키를 보관하거나 원천 API를 실호출하지 않으며, "없다", "모른다", "네트워크 실패", "인덱스 미구축"을 구분한다.
+첫 MVP는 여러 포털을 얕게 긁지 않는다. 공공데이터포털의 **목록개방현황 월간 CSV**를 로컬 인덱스로 만들고, 필요한 경우 data.go.kr 상세페이지를 라이브 조회해 API 사용방법과 활용신청 정보를 확인한다. 인증키를 보관하거나 원천 API를 실호출하지 않으며, "없다", "모른다", "네트워크 실패", "인덱스 미구축"을 구분한다.
 
 곳간은 갈피와 함께 쓰기 좋다. 갈피가 법령·근거·제약을 확인한다면, 곳간은 데이터 존재·형태·연계 가능성을 확인한다. 둘을 결합하면 공공데이터 활용, 용역 설계, 감사 대비 검토에서 근거와 데이터 양쪽을 확인할 수 있다.
 
-공개 배포는 GitHub Pages를 기본 채널로 둔다. 저장소에는 serviceKey, 토큰, 개인정보, 원천 CSV 본문을 넣지 않고, Pages 번들은 설치 없는 설명 페이지와 설계 원칙만 제공한다. 실제 검색이 필요한 배포는 사용자가 최신 목록개방현황 CSV로 로컬 인덱스를 만든 뒤 MCP 클라이언트에 연결한다.
-
-GitHub Pages 진입점은 [index.html](index.html)이며, 현재 설명 페이지는 [outputs/gotgan-public-data-tool.html](outputs/gotgan-public-data-tool.html)에 있다.
-
 ## 처음 시작
 
-Node.js 20 이상만 설치되어 있으면 된다.
+Node.js 20 이상이 필요하다.
 
 ```powershell
-git clone <곳간_GITHUB_URL>
-cd <복제된_폴더>
+git clone https://github.com/uscaidev/gotgan.git
+cd gotgan
 npm install
 npm run setup
 ```
 
-`setup`은 다음 순서로 현재 상태를 확인한다.
+`setup`은 다음 순서로 상태를 확인한다.
 
-1. Node.js 버전을 확인한다.
-2. 패키지와 MCP SDK 설치 여부를 확인한다.
-3. 스킬 원본과 클라이언트 샘플 파일이 있는지 확인한다.
-4. 로컬 인덱스가 있는지 확인한다.
-5. 온라인 검증을 요청하면 data.go.kr 카나리 상세페이지 파싱을 확인한다.
-6. 다음 단계가 최신 CSV 다운로드인지, MCP 클라이언트 등록인지 알려준다.
+1. Node.js 버전 확인
+2. 패키지와 MCP SDK 설치 여부 확인
+3. 스킬 원본과 클라이언트 샘플 파일 확인
+4. 로컬 인덱스 존재 여부 확인
+5. 온라인 검증 요청 시 data.go.kr 카나리 상세페이지 파싱 확인
+6. 다음 단계가 CSV 준비인지, MCP 클라이언트 등록인지 안내
 
-곳간은 처음부터 바로 검색되지 않을 수 있다. 검색 레인은 `data/index/`가 있어야 작동한다. 최신 CSV는 data.go.kr에서 **공공데이터포털 목록개방현황**을 검색해 내려받은 뒤 빌드한다.
+처음 설치 직후에는 검색 인덱스가 없을 수 있다. 이때 `search_dataset`은 `index_missing`을 반환한다. 최신 CSV를 받은 뒤 인덱스를 빌드한다.
 
 ```powershell
 npm run build-index -- 목록개방현황_20260630.csv
@@ -42,7 +38,7 @@ npm run smoke
 npm run doctor -- --live
 ```
 
-PowerShell 실행 정책 때문에 `npm.ps1`이 막히는 환경에서는 `npm.cmd` 또는 `node`를 직접 사용한다.
+PowerShell 실행 정책 때문에 `npm.ps1`이 막히면 `npm.cmd` 또는 `node`를 직접 사용한다.
 
 ```powershell
 npm.cmd run setup
@@ -55,8 +51,9 @@ node scripts\gotgan.mjs doctor --live
 
 ```text
 이 GitHub 저장소를 지속적으로 사용할 폴더에 clone하고 설치해줘.
-npm install 후 npm run setup을 실행하고, 인덱스가 없으면 data.go.kr의 공공데이터포털 목록개방현황 CSV가 필요하다고 알려줘.
-최신 CSV가 있으면 npm run build-index로 인덱스를 만들고, doctor --live와 smoke까지 확인한 뒤 현재 AI 도구에 MCP로 연결해줘.
+npm install 후 npm run setup을 실행해줘.
+인덱스가 없으면 data.go.kr의 공공데이터포털 목록개방현황 CSV가 필요하다고 알려줘.
+최신 CSV가 있으면 npm run build-index로 인덱스를 만들고, smoke와 doctor --live까지 확인한 뒤 현재 AI 도구에 MCP로 연결해줘.
 ```
 
 저장소의 [AGENTS.md](AGENTS.md)와 [CLAUDE.md](CLAUDE.md)가 Codex·Claude에게 같은 초기 절차를 알려준다. 설치 뒤에는 `gotgan-data` 스킬이 검색, API 사용방법 확인, 장애 진단 절차를 제공한다.
@@ -85,8 +82,6 @@ npm run guide
 ## 클라이언트 연결
 
 ### Codex와 Claude Code
-
-수동 등록:
 
 ```powershell
 codex mcp add gotgan -- node "<REPO>\scripts\run-stdio.mjs"
@@ -165,18 +160,18 @@ npm run evolve
 
 권장 운영 흐름:
 
-1. 매월 차기 등록 예정일 전후로 `monitor-source` 실행.
-2. `changed`면 최신 CSV를 내려받는다.
-3. `npm run build-index -- <csv>`로 재색인한다.
-4. `npm run smoke`와 `npm run doctor -- --live`를 실행한다.
-5. 이상이 없으면 MCP 클라이언트가 새 인덱스를 사용한다.
+1. 매월 차기 등록 예정일 전후로 `monitor-source` 실행
+2. `changed`면 최신 CSV 다운로드
+3. `npm run build-index -- <csv>`로 재색인
+4. `npm run smoke`와 `npm run doctor -- --live` 실행
+5. 이상이 없으면 MCP 클라이언트가 새 인덱스 사용
 
 ## 개발
 
 ```powershell
 npm run check
 node scripts\gotgan.mjs monitor-source --json
-node src\server.mjs
+node scripts\run-stdio.mjs
 ```
 
 주요 구조:
