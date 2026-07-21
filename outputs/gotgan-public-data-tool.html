@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>곳간 | 공공데이터 활용 판단 MCP</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17211f;
+      --muted: #5c6b66;
+      --line: #d7dfdb;
+      --paper: #f8faf7;
+      --field: #e8efe9;
+      --accent: #206a5d;
+      --accent-2: #9a5b28;
+      --warn: #b4432d;
+      --white: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+    }
+    header {
+      min-height: 88vh;
+      display: grid;
+      align-items: center;
+      padding: 48px 22px 28px;
+      background:
+        linear-gradient(90deg, rgba(32,106,93,.92), rgba(32,106,93,.76)),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.18) 0 1px, transparent 1px 42px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 1px, transparent 1px 42px);
+      color: var(--white);
+    }
+    .wrap { width: min(1120px, 100%); margin: 0 auto; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr);
+      gap: 42px;
+      align-items: center;
+    }
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(46px, 8vw, 104px);
+      line-height: .96;
+      letter-spacing: 0;
+    }
+    .tagline {
+      max-width: 720px;
+      margin: 0 0 28px;
+      font-size: clamp(20px, 2.4vw, 30px);
+      font-weight: 650;
+    }
+    .lead { max-width: 760px; color: rgba(255,255,255,.9); font-size: 17px; }
+    .commands {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .pill {
+      border: 1px solid rgba(255,255,255,.45);
+      padding: 8px 12px;
+      font-family: Consolas, "Cascadia Mono", monospace;
+      font-size: 14px;
+      background: rgba(255,255,255,.12);
+    }
+    .flow {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.38);
+      padding: 20px;
+      display: grid;
+      gap: 12px;
+    }
+    .flow-step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .num {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      background: var(--white);
+      color: var(--accent);
+      font-weight: 800;
+    }
+    .flow strong { display: block; margin-bottom: 2px; }
+    .flow span { color: rgba(255,255,255,.86); font-size: 14px; }
+    main { padding: 56px 22px 72px; }
+    section { margin: 0 auto 48px; width: min(1120px, 100%); }
+    h2 { margin: 0 0 16px; font-size: 30px; letter-spacing: 0; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      padding: 22px;
+      min-height: 160px;
+    }
+    .card h3 { margin: 0 0 10px; font-size: 19px; }
+    .card p { margin: 0; color: var(--muted); }
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .cell {
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      min-height: 116px;
+    }
+    .cell:nth-child(4n) { border-right: 0; }
+    .cell strong { display: block; margin-bottom: 8px; color: var(--accent); }
+    .cell span { color: var(--muted); }
+    .notice {
+      border-left: 5px solid var(--warn);
+      background: #fff8f5;
+      padding: 18px 20px;
+      color: #5b3128;
+    }
+    code {
+      font-family: Consolas, "Cascadia Mono", monospace;
+      background: var(--field);
+      padding: 2px 5px;
+    }
+    pre {
+      overflow: auto;
+      background: #111c19;
+      color: #e4f1ec;
+      padding: 18px;
+      font-size: 14px;
+    }
+    footer {
+      padding: 28px 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: var(--white);
+    }
+    @media (max-width: 820px) {
+      header { min-height: auto; }
+      .hero, .grid { grid-template-columns: 1fr; }
+      .matrix { grid-template-columns: 1fr; }
+      .cell { border-right: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>곳간</h1>
+        <p class="tagline">공공데이터를 찾고, 실제 업무에 쓸 수 있는지 판단하는 MCP 서버</p>
+        <p class="lead">
+          곳간은 공공데이터포털 개방목록을 로컬 인덱스로 검색하고, API 사용방법과 활용신청 정보를 확인하며,
+          갱신주기·심의유형·트래픽·망환경을 근거로 분석 반입과 시스템 연계 가능성을 검토한다.
+        </p>
+        <div class="commands">
+          <span class="pill">npm install</span>
+          <span class="pill">npm run setup</span>
+          <span class="pill">npm run build-index -- 목록개방현황.csv</span>
+        </div>
+      </div>
+      <div class="flow" aria-label="곳간 사용 흐름">
+        <div class="flow-step"><div class="num">1</div><div><strong>목록을 찾는다</strong><span>월간 목록개방현황 CSV 기반 검색</span></div></div>
+        <div class="flow-step"><div class="num">2</div><div><strong>사용방법을 확인한다</strong><span>상세페이지에서 API·활용신청 정보 추출</span></div></div>
+        <div class="flow-step"><div class="num">3</div><div><strong>연계 방식을 판단한다</strong><span>직접 API, 중계서버, 캐시, 파일 배치 반입</span></div></div>
+        <div class="flow-step"><div class="num">4</div><div><strong>원천 변화를 감지한다</strong><span>기준일·수정일·차기 등록 예정일 추적</span></div></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>왜 필요한가</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>검색 이후의 판단</h3>
+          <p>데이터가 있다는 사실만으로는 부족하다. 파일인지 API인지, 갱신주기와 데이터 한계가 무엇인지 확인해야 한다.</p>
+        </article>
+        <article class="card">
+          <h3>연계 가능성 검토</h3>
+          <p>폐쇄망 업무시스템은 외부 API 직접 호출이 어렵다. 중계서버, 캐시, 배치 반입 같은 현실적인 선택지가 필요하다.</p>
+        </article>
+        <article class="card">
+          <h3>실패 상태의 정직성</h3>
+          <p><code>no_match</code>, <code>fetch_error</code>, <code>index_missing</code>, <code>parse_partial</code>을 구분해 추정 생성을 막는다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>하는 일</h2>
+      <div class="matrix">
+        <div class="cell"><strong>search_dataset</strong><span>월간 스냅샷에서 데이터셋과 오픈API를 검색한다.</span></div>
+        <div class="cell"><strong>get_dataset_detail</strong><span>보유근거, 갱신주기, 차기 등록 예정일, 이용허락범위를 확인한다.</span></div>
+        <div class="cell"><strong>get_api_spec</strong><span>data.go.kr 상세페이지에서 사용방법과 첨부 기술문서 링크를 추출한다.</span></div>
+        <div class="cell"><strong>build_usage_guide</strong><span>활용신청 체크리스트와 serviceKey 플레이스홀더 요청 예시를 만든다.</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>처음 시작</h2>
+      <pre><code>git clone &lt;곳간_GITHUB_URL&gt;
+cd &lt;복제된_폴더&gt;
+npm install
+npm run setup
+npm run build-index -- 목록개방현황_20260630.csv
+npm run doctor -- --live</code></pre>
+      <p class="notice">
+        곳간은 serviceKey를 보관하지 않고 원천 API를 대신 호출하지 않는다. 최신 목록개방현황 CSV와 최종 활용 가능 여부는 data.go.kr 원문 페이지에서 확인한다.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">곳간은 공공데이터 활용 검토 보조 도구다. 최종 활용 전에는 제공기관 원문과 이용조건을 다시 확인한다.</div>
+  </footer>
+</body>
+</html>
